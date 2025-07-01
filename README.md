@@ -7,10 +7,9 @@ LocalSearch is a Windows desktop application for fast and efficient file and con
 - **File Search**: Quickly search for files by name within a selected directory and its subdirectories.
 - **Content Search**: Search for specific text or patterns inside files.
 - **Configurable Search Parameters**:
-  - Set the root directory for searches.
-  - Include or exclude subdirectories.
-  - Filter by file extensions (e.g., .txt, .cs, .md).
-  - Case sensitivity toggle for content search.
+  - Include subdirectories that are indexed.
+  - sort by file extensions (e.g., .txt, .cs, .md).
+  - partial matching
 - **Result Management**:
   - Display search results in a sortable and filterable list.
   - Double-click results to open files directly.
