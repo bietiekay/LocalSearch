@@ -68,11 +68,14 @@ namespace LocalSearch
             pfadOeffnenItem.Click += pfadOeffnenItem_Click;
             var uriKopierenItem = new ToolStripMenuItem("URI kopieren");
             uriKopierenItem.Click += uriKopierenItem_Click;
-            contextMenu.Items.AddRange(new ToolStripItem[] { pfadOeffnenItem, uriKopierenItem });
+            var oeffnenItem = new ToolStripMenuItem("Öffnen");
+            oeffnenItem.Click += oeffnenItem_Click;
+            contextMenu.Items.AddRange(new ToolStripItem[] { oeffnenItem, pfadOeffnenItem, uriKopierenItem });
             this.listViewResults.ContextMenuStrip = contextMenu;
             this.listViewResults.MouseUp += listViewResults_MouseUp;
             this.listViewResults.MouseDown += listViewResults_MouseDown;
             this.listViewResults.ItemDrag += listViewResults_ItemDrag;
+            this.listViewResults.MouseDoubleClick += listViewResults_MouseDoubleClick;
             this.beendenMenuItem.Click += (s, e) => {
                 allowClose = true;
                 Application.Exit();
@@ -601,6 +604,39 @@ namespace LocalSearch
                 Properties.Settings.Default.WindowSize = this.RestoreBounds.Size;
             }
             Properties.Settings.Default.Save();
+        }
+
+        private void listViewResults_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listViewResults.SelectedItems.Count > 0)
+            {
+                OpenSelectedFile();
+            }
+        }
+
+        private void oeffnenItem_Click(object sender, EventArgs e)
+        {
+            OpenSelectedFile();
+        }
+
+        private void OpenSelectedFile()
+        {
+            if (listViewResults.SelectedItems.Count > 0)
+            {
+                var item = listViewResults.SelectedItems[0];
+                var eintrag = fileEntries.FirstOrDefault(f => f.Name == item.Text && item.ToolTipText == f.FullPath);
+                if (eintrag != null)
+                {
+                    try
+                    {
+                        System.Diagnostics.Process.Start(eintrag.FullPath);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Datei konnte nicht geöffnet werden: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
         }
     }
 
