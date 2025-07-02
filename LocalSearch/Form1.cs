@@ -102,6 +102,10 @@ namespace LocalSearch
                 this.BringToFront();
                 this.Activate();
                 this.textBoxSearch.Focus();
+                if (!string.IsNullOrEmpty(textBoxSearch.Text))
+                {
+                    textBoxSearch.SelectAll();
+                }
             };
             this.aboutMenuItem.Click += (s, e) => {
                 using (var dlg = new AboutDialog())
@@ -167,6 +171,10 @@ namespace LocalSearch
                     this.Activate();
                     this.textBoxSearch.Focus();
                 }
+                if (!string.IsNullOrEmpty(textBoxSearch.Text))
+                {
+                    textBoxSearch.SelectAll();
+                }
                 return;
             }
             base.WndProc(ref m);
@@ -214,6 +222,10 @@ namespace LocalSearch
             if (this.Visible)
             {
                 this.textBoxSearch.Focus();
+                if (!string.IsNullOrEmpty(textBoxSearch.Text))
+                {
+                    textBoxSearch.SelectAll();
+                }
             }
         }
 
@@ -281,6 +293,7 @@ namespace LocalSearch
                         f.FullPath.ToLowerInvariant().Contains(wort)
                     )
                 )
+                .OrderByDescending(f => f.LastModified)
                 .Take(visibleCount)
                 .ToList();
 
@@ -563,6 +576,10 @@ namespace LocalSearch
                             this.textBoxSearch.Focus();
                         }
                     });
+                    if (!string.IsNullOrEmpty(textBoxSearch.Text))
+                    {
+                        textBoxSearch.SelectAll();
+                    }
                     return (IntPtr)1; // Event handled
                 }
             }
