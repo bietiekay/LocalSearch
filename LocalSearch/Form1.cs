@@ -57,6 +57,7 @@ namespace LocalSearch
         public Form1()
         {
             InitializeComponent();
+            this.Text = "LocalSearch"; // Fenstertitel für Single-Instance-Logik
             // OwnerDraw aktivieren
             this.listViewResults.OwnerDraw = true;
             this.listViewResults.DrawColumnHeader += listViewResults_DrawColumnHeader;
@@ -170,9 +171,12 @@ namespace LocalSearch
                     this.Show();
                     this.WindowState = FormWindowState.Normal;
                     this.ShowInTaskbar = true;
+                    this.TopMost = true; // Fenster in den Vordergrund holen
                     this.BringToFront();
                     this.Activate();
-                    this.textBoxSearch.Focus();
+                    this.TopMost = false; // TopMost wieder zurücksetzen
+                    this.Focus(); // Fokus auf das Fenster
+                    this.textBoxSearch.Focus(); // Fokus auf das Suchfeld
                 }
                 if (!string.IsNullOrEmpty(textBoxSearch.Text))
                 {
@@ -574,9 +578,12 @@ namespace LocalSearch
                             this.Show();
                             this.WindowState = FormWindowState.Normal;
                             this.ShowInTaskbar = true;
+                            this.TopMost = true; // Fenster in den Vordergrund holen
                             this.BringToFront();
                             this.Activate();
-                            this.textBoxSearch.Focus();
+                            this.TopMost = false; // TopMost wieder zurücksetzen
+                            this.Focus(); // Fokus auf das Fenster
+                            this.textBoxSearch.Focus(); // Fokus auf das Suchfeld
                         }
                     });
                     if (!string.IsNullOrEmpty(textBoxSearch.Text))
