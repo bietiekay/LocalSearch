@@ -70,7 +70,9 @@ namespace LocalSearch
             uriKopierenItem.Click += uriKopierenItem_Click;
             var oeffnenItem = new ToolStripMenuItem("Öffnen");
             oeffnenItem.Click += oeffnenItem_Click;
-            contextMenu.Items.AddRange(new ToolStripItem[] { oeffnenItem, pfadOeffnenItem, uriKopierenItem });
+            var ignoreTypeItem = new ToolStripMenuItem("Dateityp ignorieren");
+            ignoreTypeItem.Click += ignoreTypeItem_Click;
+            contextMenu.Items.AddRange(new ToolStripItem[] { oeffnenItem, pfadOeffnenItem, uriKopierenItem, ignoreTypeItem });
             this.listViewResults.ContextMenuStrip = contextMenu;
             this.listViewResults.MouseUp += listViewResults_MouseUp;
             this.listViewResults.MouseDown += listViewResults_MouseDown;
@@ -240,6 +242,7 @@ namespace LocalSearch
             if (isIndexing) return; // Verhindert parallele Indexierung
             isIndexing = true;
             var newEntries = new List<FileEntry>();
+            var ignoreTypes = Properties.Settings.Default.IgnoreFileTypes;
             if (suchPfade != null)
             {
                 foreach (string pfad in suchPfade)
@@ -254,6 +257,9 @@ namespace LocalSearch
                                 try
                                 {
                                     var info = new FileInfo(file);
+                                    string ext = info.Extension.ToLowerInvariant();
+                                    if (ignoreTypes != null && ignoreTypes.Contains(ext))
+                                        continue;
                                     newEntries.Add(new FileEntry
                                     {
                                         FullPath = info.FullName,
@@ -643,6 +649,33 @@ namespace LocalSearch
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Datei konnte nicht geöffnet werden: {ex.Message}", "Fehler", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void ignoreTypeItem_Click(object sender, EventArgs e)
+        {
+            if (listViewResults.SelectedItems.Count > 0)
+            {
+                var item = listViewResults.SelectedItems[0];
+                var eintrag = fileEntries.FirstOrDefault(f => f.Name == item.Text && item.ToolTipText == f.FullPath);
+                if (eintrag != null)
+                {
+                    string ext = Path.GetExtension(eintrag.Name).ToLowerInvariant();
+                    var ignoreTypes = Properties.Settings.Default.IgnoreFileTypes ?? new System.Collections.Specialized.StringCollection();
+                    if (!ignoreTypes.Contains(ext))
+                    {
+                        ignoreTypes.Add(ext);
+                        Properties.Settings.Default.IgnoreFileTypes = ignoreTypes;
+                        Properties.Settings.Default.Save();
+                        MessageBox.Show($"Dateityp '{ext}' wird ab jetzt ignoriert.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        // Sofortige Neuindexierung
+                        ThreadPool.QueueUserWorkItem(IndexFiles);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Dateityp '{ext}' wird bereits ignoriert.", "Info", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                 }
             }
