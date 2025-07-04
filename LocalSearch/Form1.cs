@@ -78,6 +78,7 @@ namespace LocalSearch
             this.listViewResults.MouseDown += listViewResults_MouseDown;
             this.listViewResults.ItemDrag += listViewResults_ItemDrag;
             this.listViewResults.MouseDoubleClick += listViewResults_MouseDoubleClick;
+            this.listViewResults.ShowItemToolTips = true;
             this.beendenMenuItem.Click += (s, e) => {
                 allowClose = true;
                 Application.Exit();
