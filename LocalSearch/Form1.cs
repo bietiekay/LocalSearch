@@ -11,7 +11,6 @@ using System.Runtime.InteropServices;
 using LocalSearch;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 namespace LocalSearch
@@ -238,13 +237,14 @@ namespace LocalSearch
 
         private void IndexFiles(object state)
         {
+            if (isIndexing) return; // Verhindert parallele Indexierung
             isIndexing = true;
-            UpdateStatus("Indexierung läuft...");
             var newEntries = new List<FileEntry>();
             if (suchPfade != null)
             {
                 foreach (string pfad in suchPfade)
                 {
+                    UpdateStatus("Indexierung läuft ("+pfad+")");
                     if (Directory.Exists(pfad))
                     {
                         try
@@ -323,9 +323,11 @@ namespace LocalSearch
                 this.BeginInvoke(new Action(() => UpdateStatus(status)));
                 return;
             }
-            toolStripStatusLabelStatus.Text = $"Status: {status}";
-            if (isIndexing)
-                toolStripStatusLabelStatus.Text += " (Indexierung läuft)";
+            string neuerStatus = $"Status: {status}";
+            //if (isIndexing)
+            //    neuerStatus += "Indexierung läuft";
+            if (toolStripStatusLabelStatus.Text != neuerStatus)
+                toolStripStatusLabelStatus.Text = neuerStatus;
         }
 
         private void UpdateStats()
